@@ -354,11 +354,10 @@ public class LibraryManagementSystemImpl implements LibraryManagementSystem {
         Connection conn = connector.getConn();
         try {
             // check book_id and card_id
-            String querysql = "select * from borrow where card_id = ? and book_id = ? and borrow_time = ? and return_time = 0 for update";
+            String querysql = "select * from borrow where card_id = ? and book_id = ? and return_time = 0 for update";
             PreparedStatement queryStmt = conn.prepareStatement(querysql);
             queryStmt.setInt(1, borrow.getCardId());
             queryStmt.setInt(2, borrow.getBookId());
-            queryStmt.setLong(3, borrow.getBorrowTime());
             ResultSet rs = queryStmt.executeQuery();
             if (!rs.next()) {
                 throw new Exception("Book borrow history not found");
@@ -471,12 +470,12 @@ public class LibraryManagementSystemImpl implements LibraryManagementSystem {
             }
             card.setCardId(rs.getInt(1));
             commit(conn);
+            return new ApiResult(true, null, card);
         } catch (Exception e) {
             rollback(conn);
             // System.err.println(e.getMessage());
             return new ApiResult(false, e.getMessage());
         }
-        return new ApiResult(true, null);
     }
 
     @Override
