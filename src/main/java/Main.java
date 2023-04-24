@@ -459,6 +459,7 @@ public class Main {
                             System.out.println("Failed to remove card.");
                             System.out.println(e.getMessage());
                         }
+                        break;
                     default:
                         System.out.println("Invalid choice. Exit.");
                         choice = 0;
