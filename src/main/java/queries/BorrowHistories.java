@@ -4,6 +4,7 @@ import entities.Book;
 import entities.Borrow;
 
 import java.util.List;
+import java.text.SimpleDateFormat;
 
 public class BorrowHistories {
 
@@ -128,6 +129,56 @@ public class BorrowHistories {
 
         public void setReturnTime(long returnTime) {
             this.returnTime = returnTime;
+        }
+
+
+        /*
+         * ouput like this:
+         * +--------+----------+-----------+---------+------+--------+-------+---------------+---------------+
+         * | BookID | Catagory |   Title   |  Press  | Year | Author | Price |   BorrowTime  |   ReturnTime  |
+         * +--------+----------+-----------+---------+------+--------+-------+---------------+---------------+
+         */
+        public void infoOutput() {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            String bookIdString = String.valueOf(bookId);
+            String categoryString = category;
+            String titleString = title;
+            String pressString = press;
+            String publishYearString = String.valueOf(publishYear);
+            String authorString = author;
+            String priceString = String.valueOf(price);
+            String borrowTimeString = String.valueOf(sdf.format(borrowTime));
+            String returnTimeString = "null";
+            if (returnTime != 0) {
+                returnTimeString = String.valueOf(sdf.format(returnTime));
+            }
+
+            int bookIdLine = (bookIdString.length() - 1) / 6 + 1;
+            int categoryLine = (categoryString.length() - 1) / 8 + 1;
+            int titleLine = (titleString.length() - 1) / 9 + 1;
+            int pressLine = (pressString.length() - 1) / 7 + 1;
+            int publishYearLine = (publishYearString.length() - 1) / 4 + 1;
+            int authorLine = (authorString.length() - 1) / 6 + 1;
+            int priceLine = (priceString.length() - 1) / 5 + 1;
+            int borrowTimeLine = (borrowTimeString.length() - 1) / 13 + 1;
+            int returnTimeLine = (returnTimeString.length() - 1) / 13 + 1;
+            int maxLine = Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(Math.max(bookIdLine, categoryLine), titleLine), pressLine), publishYearLine), authorLine), priceLine), Math.max(borrowTimeLine, returnTimeLine));
+            
+            String format = "| %6s | %8s | %9s | %7s | %4s | %6s | %5s | %11s | %11s |%n";
+            for (int i = 0; i < maxLine; i++) {
+                System.out.format(format,
+                        i * 6 < bookIdString.length() ? bookIdString.substring(i * 6, Math.min((i + 1) * 6, bookIdString.length())) : "",
+                        i * 8 < categoryString.length() ? categoryString.substring(i * 8, Math.min((i + 1) * 8, categoryString.length())) : "",
+                        i * 9 < titleString.length() ? titleString.substring(i * 9, Math.min((i + 1) * 9, titleString.length())) : "",
+                        i * 7 < pressString.length() ? pressString.substring(i * 7, Math.min((i + 1) * 7, pressString.length())) : "",
+                        i * 4 < publishYearString.length() ? publishYearString.substring(i * 4, Math.min((i + 1) * 4, publishYearString.length())) : "",
+                        i * 6 < authorString.length() ? authorString.substring(i * 6, Math.min((i + 1) * 6, authorString.length())) : "",
+                        i * 5 < priceString.length() ? priceString.substring(i * 5, Math.min((i + 1) * 5, priceString.length())) : "",
+                        i * 11 < borrowTimeString.length() ? borrowTimeString.substring(i * 11, Math.min((i + 1) * 11, borrowTimeString.length())) : "",
+                        i * 11 < returnTimeString.length() ? returnTimeString.substring(i * 11, Math.min((i + 1) * 11, returnTimeString.length())) : ""
+                );
+            }
         }
     }
 

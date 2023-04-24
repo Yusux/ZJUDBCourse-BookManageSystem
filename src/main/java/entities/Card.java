@@ -110,4 +110,67 @@ public final class Card {
     public void setType(CardType type) {
         this.type = type;
     }
+
+    public void infoOutput() {
+        String cardIdStr = String.valueOf(this.getCardId());
+        String cardNameStr = this.getName();
+        String cardTypeStr = this.getType().toString();
+        String cardDepartmentStr = this.getDepartment();
+        int idLine = (cardIdStr.length() - 1) / 7 + 1;
+        int nameLine = (cardNameStr.length() - 1) / 9 + 1;
+        int typeLine = (cardTypeStr.length() - 1) / 9 + 1;
+        int departmentLine = (cardDepartmentStr.length() - 1) / 15 + 1;
+        int maxLine = Math.max(idLine, Math.max(nameLine, Math.max(typeLine, departmentLine)));
+        String format = "| %7s | %9s | %9s | %15s |";
+        for (int i = 0; i < maxLine; i++) {
+            System.out.println(String.format(format,
+                    i * 7 < Math.min((i + 1) * 7, cardIdStr.length()) ? cardIdStr.substring(i * 7, Math.min((i + 1) * 7, cardIdStr.length())) : "",
+                    i * 9 < Math.min((i + 1) * 9, cardNameStr.length()) ? cardNameStr.substring(i * 9, Math.min((i + 1) * 9, cardNameStr.length())) : "",
+                    i * 9 < Math.min((i + 1) * 9, cardTypeStr.length()) ? cardTypeStr.substring(i * 9, Math.min((i + 1) * 9, cardTypeStr.length())) : "",
+                    i * 15 < Math.min((i + 1) * 15, cardDepartmentStr.length()) ? cardDepartmentStr.substring(i * 15, Math.min((i + 1) * 15, cardDepartmentStr.length())) : ""
+            ));
+        }
+        // String outLines[] = new String[maxLine];
+        // for (int i = 0; i < maxLine; i++) {
+        //     outLines[i] = "";
+        // }
+        // // fill the lines
+        // String tmp = "";
+        // for (int i = 0; i < maxLine; i++) {
+        //     if (i * 7 > Math.min((i + 1) * 7, cardIdStr.length())) {
+        //         tmp = "";
+        //     } else {
+        //         tmp = cardIdStr.substring(i * 7, Math.min((i + 1) * 7, cardIdStr.length()));
+        //     }
+        //     outLines[i] += "| " + tmp + String.join("", Collections.nCopies(7 - tmp.length(), " ")) + " ";
+        // }
+        // for (int i = 0; i < maxLine; i++) {
+        //     if (i * 9 > Math.min((i + 1) * 9, cardNameStr.length())) {
+        //         tmp = "";
+        //     } else {
+        //         tmp = cardNameStr.substring(i * 9, Math.min((i + 1) * 9, cardNameStr.length()));
+        //     }
+        //     outLines[i] += "| " + tmp + String.join("", Collections.nCopies(9 - tmp.length(), " ")) + " ";
+        // }
+        // for (int i = 0; i < maxLine; i++) {
+        //     if (i * 9 > Math.min((i + 1) * 9, cardTypeStr.length())) {
+        //         tmp = "";
+        //     } else {
+        //         tmp = cardTypeStr.substring(i * 9, Math.min((i + 1) * 9, cardTypeStr.length()));
+        //     }
+        //     outLines[i] += "| " + tmp + String.join("", Collections.nCopies(9 - tmp.length(), " ")) + " ";
+        // }
+        // for (int i = 0; i < maxLine; i++) {
+        //     if (i * 15 > Math.min((i + 1) * 15, cardDepartmentStr.length())) {
+        //         tmp = "";
+        //     } else {
+        //         tmp = cardDepartmentStr.substring(i * 15, Math.min((i + 1) * 15, cardDepartmentStr.length()));
+        //     }
+        //     outLines[i] += "| " + tmp + String.join("", Collections.nCopies(15 - tmp.length(), " ")) + " ";
+        // }
+        // // output
+        // for (int i = 0; i < maxLine; i++) {
+        //     System.out.println(outLines[i] + "|");
+        // }
+    }
 }

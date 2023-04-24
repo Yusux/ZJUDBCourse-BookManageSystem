@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
-import java.text.SimpleDateFormat;
 
 public class Main {
 
@@ -24,7 +23,7 @@ public class Main {
         try {
             // parse connection config from "resources/application.yaml"
             ConnectConfig conf = new ConnectConfig();
-            log.info("Success to parse connect config. " + conf.toString());
+            log.info("Success to parse connect config.");
             // connect to database
             DatabaseConnector connector = new DatabaseConnector(conf);
             boolean connStatus = connector.connect();
@@ -36,17 +35,16 @@ public class Main {
 
             LibraryManagementSystem library = new LibraryManagementSystemImpl(connector);
             Scanner scanner = new Scanner(System.in);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             
             System.out.println("Successfully create library management system.");
-            System.out.println("Please input function you want to use (0-10):");
+            System.out.println("Please input function you want to use (0-12):");
             System.out.println("1. Store book\t2. Increase stock\t3. Modify book info\t4. Batch store book");
             System.out.println("5. Register card\t6. List all cards\t7. Borrow book\t8. Return book");
-            System.out.println("9. List borrow history\t10. Query book\t11. Remove book");
+            System.out.println("9. List borrow history\t10. Query book\t11. Remove book\t\t12. Remove card");
             System.out.println("0. Exit");
             System.out.print("Your choice: ");
             int choice = scanner.nextInt();
-            if (choice < 0 || choice > 11) {
+            if (choice < 0 || choice > 12) {
                 System.out.println("Invalid choice. Exit.");
                 choice = 0;
             }
@@ -188,14 +186,19 @@ public class Main {
                             if (result.ok) {
                                 card = (Card) result.payload;
                                 System.out.println("Successfully register card. And the info is:");
-                                System.out.print("Card ID: ");
-                                System.out.println(card.getCardId());
-                                System.out.print("Card name: ");
-                                System.out.println(card.getName());
-                                System.out.print("Card type: ");
-                                System.out.println(card.getType());
-                                System.out.print("Card department: ");
-                                System.out.println(card.getDepartment());
+                                /*
+                                 * ouput like this:
+                                 * +---------+-----------+-----------+-----------------+
+                                 * | Card ID | Card name | Card type | Card department |
+                                 * +---------+-----------+-----------+-----------------+
+                                 * | 1       | Tom       | S         | CS              |
+                                 * +---------+-----------+-----------+-----------------+
+                                 */
+                                System.out.println("+---------+-----------+-----------+-----------------+");
+                                System.out.println("| Card ID | Card name | Card type | Card department |");
+                                System.out.println("+---------+-----------+-----------+-----------------+");
+                                card.infoOutput();
+                                System.out.println("+---------+-----------+-----------+-----------------+");
                             } else {
                                 throw new Exception(result.message);
                             }
@@ -213,15 +216,20 @@ public class Main {
                             List<Card> cards = cardList.getCards();
                             if (result.ok) {
                                 System.out.println("Successfully list all cards. And the info is:");
-                                System.out.println("Card ID\tCard name\tCard type\tCard department");
+                                /*
+                                 * ouput like this:
+                                 * +---------+-----------+-----------+-----------------+
+                                 * | Card ID | Card name | Card type | Card department |
+                                 * +---------+-----------+-----------+-----------------+
+                                 * | 1       | Tom       | S         | CS              |
+                                 * +---------+-----------+-----------+-----------------+
+                                 */
+                                System.out.println("+---------+-----------+-----------+-----------------+");
+                                System.out.println("| Card ID | Card name | Card type | Card department |");
+                                System.out.println("+---------+-----------+-----------+-----------------+");
                                 for (Card c : cards) {
-                                    System.out.print(c.getCardId());
-                                    System.out.print("\t");
-                                    System.out.print(c.getName());
-                                    System.out.print("\t");
-                                    System.out.print(c.getType());
-                                    System.out.print("\t");
-                                    System.out.println(c.getDepartment());
+                                    c.infoOutput();
+                                    System.out.println("+---------+-----------+-----------+-----------------+");
                                 }
                             } else {
                                 throw new Exception(result.message);
@@ -284,29 +292,18 @@ public class Main {
                                 BorrowHistories histories = (BorrowHistories) result.payload;
                                 List<Item> items = histories.getItems();
                                 System.out.println("Successfully list borrow history.");
-                                System.out.println("BookId\tCatagory\tTitle\t\tPublisher\tYear\tAuthor\tPrice\tBorrowTime\t\tReturnTime");
+                                /*
+                                 * ouput like this:
+                                 * +--------+----------+-----------+---------+------+--------+-------+-------------+-------------+2023-04-24
+                                 * | BookID | Catagory |   Title   |  Press  | Year | Author | Price | Borrow Time | Return Time |
+                                 * +--------+----------+-----------+---------+------+--------+-------+-------------+-------------+
+                                 */
+                                System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------------+-------------+");
+                                System.out.println("| BookID | Catagory |   Title   |  Press  | Year | Author | Price | Borrow Time | Return Time |");
+                                System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------------+-------------+");
                                 for (Item i : items) {
-                                    System.out.print(i.getBookId());
-                                    System.out.print("\t");
-                                    System.out.print(i.getCategory());
-                                    System.out.print("\t");
-                                    System.out.print(i.getTitle());
-                                    System.out.print("\t");
-                                    System.out.print(i.getPress());
-                                    System.out.print("\t");
-                                    System.out.print(i.getPublishYear());
-                                    System.out.print("\t");
-                                    System.out.print(i.getAuthor());
-                                    System.out.print("\t");
-                                    System.out.print(i.getPrice());
-                                    System.out.print("\t");
-                                    System.out.print(sdf.format(i.getBorrowTime()));
-                                    System.out.print("\t");
-                                    if (i.getReturnTime() == 0) {
-                                        System.out.println("null");
-                                    } else {
-                                        System.out.println(sdf.format(i.getReturnTime()));
-                                    }
+                                    i.infoOutput();
+                                    System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------------+-------------+");
                                 }
                             } else {
                                 throw new Exception(result.message);
@@ -411,23 +408,18 @@ public class Main {
                             ApiResult result = library.queryBook(conditions);
                             BookQueryResults bookQueryResults = (BookQueryResults) result.payload;
                             List<Book> books = bookQueryResults.getResults();
-                            System.out.println("BookId\tCatagory\tTitle\t\tPublisher\tYear\tAuthor\tPrice\tStock");
+                            /*
+                             * ouput like this:
+                             * +--------+----------+-----------+---------+------+--------+-------+-------+
+                             * | BookID | Catagory |   Title   |  Press  | Year | Author | Price | Stock |
+                             * +--------+----------+-----------+---------+------+--------+-------+-------+
+                             */
+                            System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------+");
+                            System.out.println("| BookID | Catagory |   Title   |  Press  | Year | Author | Price | Stock |");
+                            System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------+");
                             for (Book b : books) {
-                                System.out.print(b.getBookId());
-                                System.out.print("\t");
-                                System.out.print(b.getCategory());
-                                System.out.print("\t");
-                                System.out.print(b.getTitle());
-                                System.out.print("\t");
-                                System.out.print(b.getPress());
-                                System.out.print("\t");
-                                System.out.print(b.getPublishYear());
-                                System.out.print("\t");
-                                System.out.print(b.getAuthor());
-                                System.out.print("\t");
-                                System.out.print(b.getPrice());
-                                System.out.print("\t");
-                                System.out.println(b.getStock());
+                                b.infoOutput();
+                                System.out.println("+--------+----------+-----------+---------+------+--------+-------+-------+");
                             }
                         } catch (Exception e) {
                             System.out.println("Failed to query book.");
@@ -451,22 +443,36 @@ public class Main {
                             System.out.println(e.getMessage());
                         }
                         break;
+                    case 12:
+                        System.out.println("# Remove card #");
+                        try {
+                            System.out.println("Please input card ID of the card you want to remove:");
+                            int cardId = scanner.nextInt();
+                            ApiResult result = library.removeCard(cardId);
+                            if (result.ok) {
+                                System.out.println("Success to remove card.");
+                            } else {
+                                System.out.println("Failed to remove card.");
+                                System.out.println(result.message);
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed to remove card.");
+                            System.out.println(e.getMessage());
+                        }
                     default:
                         System.out.println("Invalid choice. Exit.");
                         choice = 0;
                         break;
                 }
                 System.out.println("Operation end.");
-                System.out.println("Please input function you want to use (0-10):");
+                System.out.println("Please input function you want to use (0-12):");
                 System.out.println("1. Store book\t2. Increase stock\t3. Modify book info\t4. Batch store book");
                 System.out.println("5. Register card\t6. List all cards\t7. Borrow book\t8. Return book");
-                System.out.println("9. List borrow history\t10. Query book\t11. Remove book");
+                System.out.println("9. List borrow history\t10. Query book\t11. Remove book\t\t12. Remove card");
                 System.out.println("0. Exit");
                 System.out.print("Your choice: ");
                 choice = scanner.nextInt();
             }
-
-            System.out.println("Bye.");
 
             // release database connection handler
             if (connector.release()) {
@@ -474,7 +480,10 @@ public class Main {
             } else {
                 log.warning("Failed to release connection.");
             }
+
             scanner.close();
+
+            System.out.println("Bye.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
